@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-require_relative 'rue.rb'
+require_relative 'lib/rue.rb'
 Shell.new.run
 
