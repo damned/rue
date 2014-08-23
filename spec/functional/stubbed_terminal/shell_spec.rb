@@ -1,8 +1,6 @@
-require_relative 'spec_helper'
-require_relative 'rue_doubles'
-require_relative 'rue_matchers'
+require_relative '../../spec_helper'
 
-require_relative '../lib/shell'
+require_relative '../../../lib/shell'
 
 include Rue
 include Test::RueDoubles

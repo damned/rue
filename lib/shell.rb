@@ -7,11 +7,9 @@ require_relative 'executor'
 
 require_relative 'errors/shell_exit'
 
-
 module Rue
 
   class Shell
-
     def initialize(terminal: Terminal.new, executor: Executor.new(terminal))
       @executor = executor
       @terminal = terminal

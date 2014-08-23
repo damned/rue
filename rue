@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
 require_relative 'lib/shell.rb'
+puts 'rue says hello'
 Rue::Shell.new.run(handle_error: true)
 
