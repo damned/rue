@@ -10,7 +10,7 @@ module Rue
     def add(c)
       if complete? || c == "\r"
         @complete = true
-        return "\r\n"
+        return "\n"
       end
       @line +=c
       c

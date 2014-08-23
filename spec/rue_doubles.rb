@@ -3,14 +3,29 @@ require 'rspec'
 module Rue
   module Test
     module RueDoubles
-      module TerminalDoubleExtensions
-        def simulate_input(line)
-          self.stub(:get_char).and_return *(line + "\r").chars
+      class TerminalDouble #refac extend real Terminal, use StringIO for stream?
+        def initialize
+          @printed = ''
+          @input = []
+        end
+        def simulate_input(*lines)
+          lines.each do |line|
+            @input += (line + "\r").chars
+          end
+        end
+        def get_char
+          @input.shift
+        end
+        def print(s)
+          @printed += s
+        end
+        def output
+          @printed.split "\n"
         end
       end
 
       def terminal_double
-        double('terminal', print: nil).extend TerminalDoubleExtensions
+        TerminalDouble.new
       end
     end
   end

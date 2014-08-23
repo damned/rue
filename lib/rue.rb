@@ -6,8 +6,14 @@ require_relative 'line_discipline'
 module Rue
 
   class ExecutionContext
+    def initialize(terminal)
+      @terminal = terminal
+    end
     def method_missing(method, *params)
-      puts "running (honest): #{method} #{params}"
+      stderr.puts "running (honest): #{method} #{params}"
+    end
+    def echo(s='')
+      @terminal.print s + "\n"
     end
     def exit
       raise 'Had enough, exiting...'
@@ -15,8 +21,8 @@ module Rue
   end
 
   class Executor
-    def initialize
-      @context = ExecutionContext.new
+    def initialize(terminal)
+      @context = ExecutionContext.new(terminal)
     end
     def exec(line)
       @context.instance_eval line.to_s
@@ -25,7 +31,7 @@ module Rue
 
   class Shell
 
-    def initialize(executor: Executor.new, terminal: Terminal.new)
+    def initialize(terminal: Terminal.new, executor: Executor.new(terminal))
       @executor = executor
       @terminal = terminal
     end
