@@ -5,6 +5,10 @@ require_relative 'line_discipline'
 
 module Rue
 
+  class ShellExit < StandardError
+
+  end
+
   class ExecutionContext
     def initialize(terminal)
       @terminal = terminal
@@ -16,7 +20,7 @@ module Rue
       @terminal.print s + "\n"
     end
     def exit
-      raise 'Had enough, exiting...'
+      raise ShellExit.new 'Had enough, exiting...'
     end
   end
 
@@ -35,7 +39,7 @@ module Rue
       @executor = executor
       @terminal = terminal
     end
-    def run
+    def run(handle_error: false)
       begin
         while true do
 
@@ -48,7 +52,15 @@ module Rue
           executor.exec line
         end
       rescue => e
-        puts "you're just mucking around now, rue has had enough: #{e}"
+        if e.is_a? ShellExit
+          puts "rue has had enough, bye :)"
+          return
+        end
+        if handle_error
+          puts "you're just mucking around now, rue has had enough: #{e}"
+          return
+        end
+        raise
       end
     end
     private

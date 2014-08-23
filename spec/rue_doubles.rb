@@ -8,6 +8,10 @@ module Rue
           @printed = ''
           @input = []
         end
+        def simulate(*lines)
+          lines << 'exit'
+          simulate_input *lines
+        end
         def simulate_input(*lines)
           lines.each do |line|
             @input += (line + "\r").chars
@@ -19,8 +23,8 @@ module Rue
         def print(s)
           @printed += s
         end
-        def output
-          @printed.split "\n"
+        def output(skip_exit: true)
+          @printed.split("\n") - ['exit']
         end
       end
 

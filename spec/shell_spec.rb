@@ -1,5 +1,6 @@
 require_relative 'spec_helper'
 require_relative 'rue_doubles'
+require_relative 'rue_matchers'
 
 require_relative '../lib/rue'
 
@@ -19,21 +20,20 @@ describe Shell do
   describe 'basic commands' do
     describe 'echo' do
       it 'should echo string input' do
-        terminal.simulate_input 'echo "bob"',
-                                'exit'
+        terminal.simulate 'echo "bob"'
         shell.run
-        expect(terminal.output).to eq [
-                                          'echo "bob"',
-                                          'bob',
-                                          'exit'
-                                      ]
+        expect(terminal.output).to comprise 'echo "bob"',
+                                            'bob'
       end
     end
     describe 'pwd' do
       xit 'should show current directory' do
-        terminal.simulate_input 'exit'
+        terminal.simulate 'pwd'
+
         shell.run
-        terminal.output
+
+        expect(terminal.output).to comprise 'pwd',
+                                            Pathname.new(__FILE__).parent.to_s
       end
     end
     describe 'ls' do
