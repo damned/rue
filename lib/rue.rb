@@ -1,73 +1,51 @@
 require 'io/console'
 
-class Terminal
-  def get_char
-    STDIN.getch
-  end
-  def print(s)
-    STDOUT.print s
-  end
-end
+require_relative 'terminal'
+require_relative 'line_discipline'
 
+module Rue
 
-class LineDiscipline
-  def initialize
-    @line = ''
-  end
-  def complete?
-    @complete || false
-  end
-  def add(c)
-    if complete? || c == "\r"
-      @complete = true
-      return "\r\n"
+  class ExecutionContext
+    def method_missing(method, *params)
+      puts "running (honest): #{method} #{params}"
     end
-    @line +=c
-    c
+    def exit
+      raise 'Had enough, exiting...'
+    end
   end
-  def to_s
-    @line
+
+  class Executor
+    def initialize
+      @context = ExecutionContext.new
+    end
+    def exec(line)
+      @context.instance_eval line.to_s
+    end
   end
-end
 
-class ExecutionContext
-  def method_missing(method, *params)
-    puts "running (honest): #{method} #{params}"
-  end
-  def exit
-    raise 'Had enough, exiting...'
-  end
-end
+  class Shell
 
-class Executor
-  def initialize
-    @context = ExecutionContext.new
-  end
-  def exec(line)
-    @context.instance_eval line.to_s
-  end
-end
+    def initialize(executor: Executor.new, terminal: Terminal.new)
+      @executor = executor
+      @terminal = terminal
+    end
+    def run
+      begin
+        while true do
 
-class Shell
-  def run
-    begin
-      executor = Executor.new
-      terminal = Terminal.new
+          line = LineDiscipline.new
 
-      while true do
+          until line.complete?
+            terminal.print line.add(terminal.get_char)
+          end
 
-        line = LineDiscipline.new
-
-        until line.complete?
-          terminal.print line.add(terminal.get_char)
+          executor.exec line
         end
-
-        executor.exec line
+      rescue => e
+        puts "you're just mucking around now, rue has had enough: #{e}"
       end
-    rescue => e
-      puts "you're just mucking around now, rue has had enough: #{e}"
     end
+    private
+    attr_reader :executor, :terminal
   end
-  private
-  attr_reader :executor, :terminal
 end
