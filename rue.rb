@@ -48,20 +48,26 @@ class Executor
   end
 end
 
-begin
-  executor = Executor.new
-  term = Terminal.new
+class Shell
+  def run
+    begin
+      executor = Executor.new
+      terminal = Terminal.new
 
-  while true do
+      while true do
 
-    line = LineDiscipline.new
+        line = LineDiscipline.new
 
-    until line.complete?
-      term.print line.add(term.get_char)
+        until line.complete?
+          terminal.print line.add(terminal.get_char)
+        end
+
+        executor.exec line
+      end
+    rescue => e
+      puts "you're just mucking around now, rue has had enough: #{e}"
     end
-    
-    executor.exec line
   end
-rescue => e
-  puts "you're just mucking around now, rue has had enough: #{e}"
+  private
+  attr_reader :executor, :terminal
 end
