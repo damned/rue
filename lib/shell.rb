@@ -2,36 +2,13 @@ require 'io/console'
 
 require_relative 'terminal'
 require_relative 'line_discipline'
+require_relative 'execution_context'
+require_relative 'executor'
+
+require_relative 'errors/shell_exit'
+
 
 module Rue
-
-  class ShellExit < StandardError
-
-  end
-
-  class ExecutionContext
-    def initialize(terminal)
-      @terminal = terminal
-    end
-    def method_missing(method, *params)
-      stderr.puts "running (honest): #{method} #{params}"
-    end
-    def echo(s='')
-      @terminal.print s + "\n"
-    end
-    def exit
-      raise ShellExit.new 'Had enough, exiting...'
-    end
-  end
-
-  class Executor
-    def initialize(terminal)
-      @context = ExecutionContext.new(terminal)
-    end
-    def exec(line)
-      @context.instance_eval line.to_s
-    end
-  end
 
   class Shell
 
